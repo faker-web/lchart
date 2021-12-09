@@ -24,20 +24,14 @@ export const Base = Template.bind({});
 Base.args = {
   type: 'chart',
   padding: 30,
-  x: ['2011', '2012', '2013', '2014'],
+  x: ['2011', '2012', '2013', '2014', '2015'],
   y: [
     {
       labal: '',
-      data: [50, 197, 97, 127],
+      data: [50, 187, 97, 127, 130],
       color: '#2FC25B',
     },
-    {
-      labal: '',
-      data: [30, 107, 27, 227],
-      color: 'red',
-    },
   ],
-  chartCrycleRadius: 3,
   onChange: (e, idx) => {
     console.log(
       `x轴的坐标是: ${e.offsetX}, y轴的坐标是: ${e.offsetY}, 当前选中的数据是第${idx}个`
@@ -49,16 +43,19 @@ export const Multiple = Template.bind({});
 Multiple.args = {
   type: 'chart',
   padding: 30,
-  x: ['2011', '2012', '2013', '2014'],
+  x: ['2011', '2012', '2013', '2014', '2015'],
   y: [
     {
       labal: '',
-      data: [50, 197, 97, 127],
+      data: [50, 187, 197, 127, 99],
       color: '#2FC25B',
     },
+    {
+      labal: '',
+      data: [30, 107, 227, 227, 208],
+      color: 'red',
+    },
   ],
-
-  chartCrycleRadius: 3,
   onChange: (e, idx) => {
     console.log(
       `x轴的坐标是: ${e.offsetX}, y轴的坐标是: ${e.offsetY}, 当前选中的数据是第${idx}个`

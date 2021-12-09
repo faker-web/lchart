@@ -22,6 +22,7 @@ export default class Base {
   yAxisData: IY
   dataLength: number
   yMax: number
+  yAxisCount: number
 
   constructor(props) {
     this.props = props
@@ -36,24 +37,17 @@ export default class Base {
     this._init()
   
     this.effectWidth = this.width - this.left - this.right
-    this.effectHeight = this.width - this.top - this.bottom
-    this.bottomLineY = this.width - this.bottom
+    this.effectHeight = this.height - this.top - this.bottom
+    this.bottomLineY = this.height - this.bottom
+    this.yAxisCount = 5
   }
 
   _init() {
-    const canvas: HTMLCanvasElement = this.props.id ? document.getElementById(this.props.id) as HTMLCanvasElement : this._createCanvas()
+    const canvas: HTMLCanvasElement = document.getElementById(this.props.id) as HTMLCanvasElement
     this.canvas = canvas
     this.width = canvas.width
-    this.height = canvas.width
+    this.height = canvas.height
     this.ctx = canvas.getContext('2d')
-  }
-
-  _createCanvas() {
-    const canvas = document.createElement('canvas')
-    canvas.width = 300
-    canvas.height = 300
-    document.body.appendChild(canvas)
-    return canvas
   }
 
   drawAxis() {
@@ -69,14 +63,14 @@ export default class Base {
   }
 
   _drawYAxis() {
-    const length = this.dataLength
-    const yPiece = this.effectHeight / (length - 1) // 0虚线和x坐标轴是重合的，所以要增大间距
+    const yCoodrAxisData = this._getYCoodrAxisData()
+    const length = yCoodrAxisData.length
+    const yPiece = this.effectHeight / length
     const points = []
     for (let i = 0; i < length; i ++) {
-      const y = this.height - i * yPiece - this.bottom
+      const y = this.height - (i + 1) * yPiece - this.bottom // 0刻度线不画
       points.push(y)
-      if (i === 0) continue;
-      const start = { x: this.left, y }
+      const start = { x: this.left, y: y }
       const end = { x: this.width - this.right, y }
       this.drawLine({ start, end, isDotted: true })
     }
@@ -90,18 +84,19 @@ export default class Base {
     let max = yDataArr.reduce((pre, current) => {
       return current > pre ? current : pre
     }, -Infinity)
-    this.yMax = max
-    const yMaxLen = 4 // y坐标系最多展示五条横线
+    
     if (max < 10) max = 10
     else {
-      const piece = max / yMaxLen
-      let integer = piece - piece % 10
-      integer += yMaxLen * 0.5 * 10
-      max = integer * yMaxLen
+      const piece = max / this.yAxisCount       // 将最大值分为`this.yAxisCount`份
+      const remainder = piece % 10              // 获得最大数的余数
+      let integer = piece - remainder           // 将每一份取整
+      integer = integer + 10                    // 将每一份数据在加上10
+      max = integer * this.yAxisCount           // 得到新的最大值
     }
+    this.yMax = max
     const arr = []
-    for (let i = 0; i <= yMaxLen; i ++) {
-      arr.push((max / yMaxLen) * i)
+    for (let i = 1; i <= this.yAxisCount; i ++) {
+      arr.push((max / this.yAxisCount) * i)
     }
     return arr
   }
@@ -187,12 +182,10 @@ export default class Base {
 
   drawCycle(x, y, r, color) {
     this.ctx.beginPath()
-    console.log(this.ctx.fillStyle, 'this.ctx.fillStyle1')
     this.setFillColor(color)
     this.ctx.arc(x, y, r, 0, 2 * Math.PI, false)
     this.ctx.fill()
     this.clearFillColor()
-    console.log(this.ctx.fillStyle, 'this.ctx.fillStyle2')
   }
 
   clear() {

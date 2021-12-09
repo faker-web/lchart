@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import lChart from './Chart'
 import { IX, IY, type } from './type'
 
@@ -8,10 +8,6 @@ export interface ChartProps {
    */
   type: string
   /**
-   * canvas 组件id
-   */
-  id?: string;
-  /**
    * x轴刻度线数据
    */
   x: IX;
@@ -19,6 +15,14 @@ export interface ChartProps {
    * y轴数据
    */
   y: IY
+  /**
+   * canvas height
+   */
+  width?: number
+  /**
+   * canvas width
+   */
+  height?: number
   /**
    * canvas 组件左边距
    */
@@ -54,23 +58,29 @@ export interface ChartProps {
 export const Chart: React.FC<ChartProps> = ({
   type = 'chart',
   padding = 30,
+  width = 600,
+  height = 400,
+  chartCrycleRadius = 5,
   ...rest
 }) => {
+  const id = useRef(`canvas${`${Math.random() * 10}`.slice(2,5)}`)
+
   useEffect(() => {
     const chart = new lChart({
-      id: 'canvas',
       type,
       padding,
+      chartCrycleRadius,
+      id: id.current,
       ...rest,
     })
     return () => {
       const cancelMousemove = chart.getCancelMousemove()
       cancelMousemove()
     }
-  }, [rest, type, padding])
-  if (rest.id) return null
+  }, [rest, type, padding, width, height, chartCrycleRadius])
+
   return (
-    <canvas id="canvas" width="400" height="400"></canvas>
+    <canvas id={id.current} width={width} height={height}></canvas>
   )
 }
 
