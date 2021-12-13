@@ -1,5 +1,5 @@
-import Base from "./Base"
-import { ICrycle } from './type'
+import Base from "../Base"
+import { ICrycle } from '../type'
 
 class Chart extends Base {
   chartCrycleRadius: string
@@ -11,6 +11,7 @@ class Chart extends Base {
     super(props)
     this.chartCrycleRadius = props.chartCrycleRadius
     this.onChange = props.onChange
+    this.calculationChartXAxisSectionWidth()
     this._chartInit()
     this.addEventListener()
   }

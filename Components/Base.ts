@@ -4,6 +4,7 @@ export default class Base {
   props: any
   canvas: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
+  type: string
   width: number
   height: number
   top: number
@@ -23,9 +24,11 @@ export default class Base {
   dataLength: number
   yMax: number
   yAxisCount: number
+  XAxisSecionWidth: number
 
   constructor(props) {
     this.props = props
+    this.type = props.type
     this.top = props.top || props.padding
     this.right = props.right || props.padding
     this.bottom = props.bottom || props.padding
@@ -58,7 +61,8 @@ export default class Base {
 
   _drawXAxis() {
     const start = { x: this.left, y: this.bottomLineY }
-    const end = { x: this.width - this.right, y: this.bottomLineY }
+    const end = { x: this.left + this.effectWidth, y: this.bottomLineY }
+    console.log(this.left + this.effectWidth)
     this.drawLine({ start, end })
   }
 
@@ -101,42 +105,62 @@ export default class Base {
     return arr
   }
 
+  calculationChartXAxisSectionWidth() {
+    this.XAxisSecionWidth = this.effectWidth / (this.xAxisData.length - 1)
+  }
+
+  calculationBarXAxisSectionWidth() {
+    this.XAxisSecionWidth = this.effectWidth / this.xAxisData.length
+  }
+
   _drawChartXAxisCoodrLine() {
-    // 两个点占据一个位置，所以length要减少1
-    const widthOfPiece = this.effectWidth / (this.xAxisData.length - 1)
+    this._drawAxisCoodrLine(this.xAxisData.length)
+  }
+
+  _drawBarXAxisCoodrLine() {
+    this._drawAxisCoodrLine(this.xAxisData.length + 1)
+  }
+
+  _drawAxisCoodrLine(length) {
     const xPoints = []
-    if (this.props.type === 'chart') {
-      for (let i = 0; i < this.xAxisData.length; i ++) {
-        let x = i * widthOfPiece + this.left
-        if (i === 0) x = x + 1
-        else if (i === this.xAxisData.length - 1) x = x - 1
-        let start = { x, y: this.bottomLineY }
-        let end = { x, y: this.bottomLineY + 5 }
-        this.drawLine({ start, end })
-        xPoints.push(start.x)
-      }
-      this.xPoints = xPoints
+    for (let i = 0; i < length; i ++) {
+      let x = i * this.XAxisSecionWidth + this.left
+      if (i === 0) x = x + 1
+      else if (i === length - 1) x = x - 1
+      let start = { x, y: this.bottomLineY }
+      let end = { x, y: this.bottomLineY + 5 }
+      this.drawLine({ start, end })
+      xPoints.push(start.x)
     }
+    this.xPoints = xPoints
   }
 
   _drawChartXAxisCoodrText() {
     const xAxisData = this.xAxisData
     for (let i = 0; i < this.xPoints.length; i ++) {
       const width = this.ctx.measureText(xAxisData[i]).width
-      this._fillText(xAxisData[i], this.xPoints[i] - width / 2, this.bottomLineY + 15)
+      this._fillText({ text: xAxisData[i], x: this.xPoints[i] - width / 2, y: this.bottomLineY + 15 })
+    }
+  }
+
+  _drawBarXAxisCoodrText() {
+    const xAxisData = this.xAxisData
+    for (let i = 0; i < this.xPoints.length; i ++) {
+      const width = this.ctx.measureText(xAxisData[i]).width
+      this._fillText({ text: xAxisData[i], x: this.xPoints[i] - width / 2 + this.XAxisSecionWidth / 2, y: this.bottomLineY + 15 })
     }
   }
 
   _fillYAxisText() {
     const yCoodrAxisData = this._getYCoodrAxisData()
     for (let i = 0; i < yCoodrAxisData.length; i ++) {
-      this._fillText(yCoodrAxisData[i], this.left - 20, this.yPoints[i] + 2)
+      this._fillText({ text: yCoodrAxisData[i], x: this.left - 20, y: this.yPoints[i] + 2 })
     }
   }
 
-  _fillText(text, x, y, maxWidth?) {
-    this.setFillColor(this.textColor)
-    this.ctx.fillText(text, x, y, maxWidth)
+  _fillText({ text, x, y, color = this.textColor }) {
+    this.setFillColor(color)
+    this.ctx.fillText(text, x, y)
     this.clearFillColor()
   }
 
@@ -178,6 +202,21 @@ export default class Base {
     this.ctx.moveTo(start.x, start.y)
     this.ctx.lineTo(end.x, end.y)
     this.ctx.stroke()
+  }
+
+  drawBar({
+    x,
+    y,
+    w,
+    h,
+    color = '#000'
+  }) {
+    this.ctx.beginPath()
+    this.setFillColor(color)
+    this.ctx.rect(x, y, w, h);
+    this.ctx.fill()
+    this.ctx.closePath()
+    this.clearFillColor()
   }
 
   drawCycle(x, y, r, color) {

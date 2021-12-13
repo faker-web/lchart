@@ -1,12 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import lChart from './Chart'
-import { IX, IY, type } from './type'
+import lChart from './bar'
+import { IX, IY } from '../type'
 
 export interface ChartProps {
-  /**
-   * 当前组件的类型 'chart' | 'bar' | 'acr'
-   */
-  type: string
   /**
    * x轴刻度线数据
    */
@@ -44,10 +40,6 @@ export interface ChartProps {
    */
   padding?: number
   /**
-   * 折线图圆的半径
-   */
-  chartCrycleRadius?: number
-  /**
    * 鼠标onchange事件回掉函数(e, idx)
    * e => Event
    * idx => 当前所选中的index(从0开始)
@@ -55,21 +47,17 @@ export interface ChartProps {
   onChange?: () => {}
 }
 
-export const Chart: React.FC<ChartProps> = ({
-  type = 'chart',
+export const Bar: React.FC<ChartProps> = ({
   padding = 30,
   width = 600,
   height = 400,
-  chartCrycleRadius = 5,
   ...rest
 }) => {
   const id = useRef(`canvas${`${Math.random() * 10}`.slice(2,5)}`)
 
   useEffect(() => {
     const chart = new lChart({
-      type,
       padding,
-      chartCrycleRadius,
       id: id.current,
       ...rest,
     })
@@ -77,10 +65,9 @@ export const Chart: React.FC<ChartProps> = ({
       const cancelMousemove = chart.getCancelMousemove()
       cancelMousemove()
     }
-  }, [rest, type, padding, width, height, chartCrycleRadius])
+  }, [rest, padding, width, height])
 
   return (
     <canvas id={id.current} width={width} height={height}></canvas>
   )
 }
-

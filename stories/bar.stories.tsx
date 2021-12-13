@@ -1,28 +1,27 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import { Chart } from '../Components';
+import { Bar } from '../components/bar';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'Example/Chart',
-  component: Chart,
+  title: 'Example/Bar',
+  component: Bar,
   parameters: {
     docs: {
       description: {
-        component: 'A Component for line Chart',
+        component: 'A Component for bar',
       },
     },
   },
-} as ComponentMeta<typeof Chart>;
+} as ComponentMeta<typeof Bar>;
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<typeof Chart> = (args) => <Chart {...args} />;
+const Template: ComponentStory<typeof Bar> = (args) => <Bar {...args} />;
 
-export const Base = Template.bind({});
+export const BaseBar = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
-Base.args = {
-  type: 'chart',
+BaseBar.args = {
   padding: 30,
   x: ['2011', '2012', '2013', '2014', '2015'],
   y: [
@@ -34,14 +33,16 @@ Base.args = {
   ],
   onChange: (e, idx) => {
     console.log(
-      `x轴的坐标是: ${e.offsetX}, y轴的坐标是: ${e.offsetY}, 当前选中的数据是第${idx}个`
+      `x轴的坐标是: ${e.offsetX},
+      y轴的坐标是: ${e.offsetY},
+      当前选中的数据组是第${idx.groupIdx}组，第${idx.itemIdx}个
+      `
     )
   }
 };
 
-export const Multiple = Template.bind({});
-Multiple.args = {
-  type: 'chart',
+export const MultipleBar = Template.bind({});
+MultipleBar.args = {
   padding: 30,
   x: ['2011', '2012', '2013', '2014', '2015'],
   y: [
@@ -58,7 +59,10 @@ Multiple.args = {
   ],
   onChange: (e, idx) => {
     console.log(
-      `x轴的坐标是: ${e.offsetX}, y轴的坐标是: ${e.offsetY}, 当前选中的数据是第${idx}个`
+      `x轴的坐标是: ${e.offsetX},
+      y轴的坐标是: ${e.offsetY},
+      当前选中的数据组是第${idx.groupIdx}组，第${idx.itemIdx}个
+      `
     )
   }
 };
