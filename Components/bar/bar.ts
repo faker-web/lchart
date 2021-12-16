@@ -51,7 +51,7 @@ class Chart extends Base {
         const x = this.left + (i + 1) * padding + j * this.XAxisSecionWidth  + i * this.barWidth
         const color = this.yAxisData[i]?.color
         const data = this.yAxisData[i].data[j]
-        const h = this.calculationYHeight(data)
+        const h = this.calculationBarHeight(data)
         const y = this.effectHeight - h + this.bottom
         const w = this.barWidth
         this.drawBar({ x, y, w, h, color })

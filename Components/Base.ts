@@ -186,6 +186,11 @@ export default class Base {
     return this.effectHeight - (data * this.yPiece) + this.bottom
   }
 
+  calculationBarHeight(data) {
+    this.yPiece = this.effectHeight / this.yMax
+    return data * this.yPiece
+  }
+
   drawLine({
     start,
     end,
