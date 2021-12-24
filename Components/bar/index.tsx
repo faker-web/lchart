@@ -53,7 +53,7 @@ export const Bar: React.FC<ChartProps> = ({
   height = 400,
   ...rest
 }) => {
-  const id = useRef(`canvas${`${Math.random() * 10}`.slice(2,5)}`)
+  const id = useRef(`canvas${`${Math.random() * 10}`.slice(2,7)}`)
 
   useEffect(() => {
     const chart = new lChart({

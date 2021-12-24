@@ -52,14 +52,13 @@ export interface ChartProps {
 }
 
 export const Chart: React.FC<ChartProps> = ({
-  type = 'bar',
   padding = 30,
   width = 600,
   height = 400,
   chartCrycleRadius = 5,
   ...rest
 }) => {
-  const id = useRef(`canvas${`${Math.random() * 10}`.slice(2,5)}`)
+  const id = useRef(`canvas${`${Math.random() * 10}`.slice(2,7)}`)
 
   useEffect(() => {
     const chart = new lChart({
@@ -72,7 +71,7 @@ export const Chart: React.FC<ChartProps> = ({
       const cancelMousemove = chart.getCancelMousemove()
       cancelMousemove()
     }
-  }, [rest, type, padding, width, height, chartCrycleRadius])
+  }, [rest, padding, width, height, chartCrycleRadius])
 
   return (
     <canvas id={id.current} width={width} height={height}></canvas>

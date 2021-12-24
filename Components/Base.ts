@@ -1,5 +1,7 @@
 import { IX, IY } from './type'
 
+const DPI = window.devicePixelRatio
+
 export default class Base {
   props: any
   canvas: HTMLCanvasElement
@@ -29,24 +31,26 @@ export default class Base {
   constructor(props) {
     this.props = props
     this.type = props.type
-    this.top = props.top || props.padding
-    this.right = props.right || props.padding
-    this.bottom = props.bottom || props.padding
-    this.left = props.left || props.padding
+    this.top = (props.top || props.padding)
+    this.right = (props.right || props.padding)
+    this.bottom = (props.bottom || props.padding)
+    this.left = (props.left || props.padding)
     this.textColor = props.textColor
-    this.xAxisData = props.x
+    this.xAxisData = props.x || []
     this.yAxisData = Array.isArray(props.y) ? props.y : [props.y]
     this.dataLength = this.xAxisData.length
     this._init()
   
-    this.effectWidth = this.width - this.left - this.right
-    this.effectHeight = this.height - this.top - this.bottom
-    this.bottomLineY = this.height - this.bottom
+    this.effectWidth = (this.width - this.left - this.right)
+    this.effectHeight = (this.height - this.top - this.bottom)
+    this.bottomLineY = (this.height - this.bottom)
     this.yAxisCount = 5
   }
 
   _init() {
     const canvas: HTMLCanvasElement = document.getElementById(this.props.id) as HTMLCanvasElement
+    canvas.width = canvas.width
+    canvas.height = canvas.height
     this.canvas = canvas
     this.width = canvas.width
     this.height = canvas.height
@@ -62,7 +66,6 @@ export default class Base {
   _drawXAxis() {
     const start = { x: this.left, y: this.bottomLineY }
     const end = { x: this.left + this.effectWidth, y: this.bottomLineY }
-    console.log(this.left + this.effectWidth)
     this.drawLine({ start, end })
   }
 
@@ -224,10 +227,11 @@ export default class Base {
     this.clearFillColor()
   }
 
-  drawCycle(x, y, r, color) {
+  drawCycle(x, y, r, color, start = 0, end =  2 * Math.PI) {
     this.ctx.beginPath()
     this.setFillColor(color)
-    this.ctx.arc(x, y, r, 0, 2 * Math.PI, false)
+    this.ctx.arc(x, y, r, start, end, false)
+    this.ctx.lineTo(x, y)
     this.ctx.fill()
     this.clearFillColor()
   }

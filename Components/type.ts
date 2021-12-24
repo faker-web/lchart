@@ -14,4 +14,8 @@ export type ICrycle = Array<{
   color?: string
 }>
 
-export type type = 'chart' | 'bar' | 'acr'
+export interface IPiedata {
+  num: number
+  name: string
+  color: string
+}
