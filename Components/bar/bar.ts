@@ -85,7 +85,6 @@ class Chart extends Base {
       }
     }
 
-    
     /**
      * 吸附线居中
      */
@@ -96,15 +95,8 @@ class Chart extends Base {
   _drawTipsLine(x) {
     this.clear()
     this._chartInit()
-    const start = {
-      x,
-      y: this.height - this.bottom
-    }
-    const end = {
-      x,
-      y: this.bottom
-    }
-    this.drawLine({ start, end, isDotted: true })
+    this.ctx.strokeStyle = '#d0d0d0'
+    this.drawLine(x, this.height - this.bottom, x, this.bottom)
   }
 }
 

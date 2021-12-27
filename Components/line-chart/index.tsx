@@ -44,6 +44,10 @@ export interface ChartProps {
    */
   chartCrycleRadius?: number
   /**
+   * 面积图背景颜色，数组类型
+   */
+  area: Array<string>
+  /**
    * 鼠标onchange事件回掉函数(e, idx)
    * e => Event
    * idx => 当前所选中的index(从0开始)

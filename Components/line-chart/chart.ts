@@ -6,11 +6,13 @@ class Chart extends Base {
   crycle: ICrycle
   onChange: (e, idx, fn) => {}
   cancelMousemove: () => {}
+  area: Array<string>
 
   constructor(props) {
     super(props)
     this.chartCrycleRadius = props.chartCrycleRadius
     this.onChange = props.onChange
+    this.area = props.area
     this.calculationChartXAxisSectionWidth()
     this._chartInit()
     this.addEventListener()
@@ -28,28 +30,40 @@ class Chart extends Base {
 
   _chartInit() {
     this.drawAxis()                       // 坐标轴（通用）
-    this._drawChartXAxisCoodrLine()       // 折线图x坐标轴上的竖线
-    this._drawChartXAxisCoodrText()       // 折线图x坐标轴上的文案
+    this._drawChartXAxisMark()            // 折线图x坐标轴上的竖线和文案
     this._drawChart()                     // 画折线图
-    this._drawCycle()                     // 画圆
+    this._drawCycle()                     // 面积图不画圆
   }
 
   _drawChart() {
     const crycle = []
     for (let i = 0; i < this.yAxisData.length; i ++) {
       const currentCrycle = { color: this.yAxisData[i].color, data: [] }
+      this.ctx.beginPath()
+
+      if (this.area) {
+        this.ctx.moveTo(this.left, this.bottomLineY)
+      }
+
       for (let j = 0; j < this.dataLength; j ++) {
-        const start = {
-          x: this.xPoints[j],
-          y: this.calculationYHeight(this.yAxisData[i].data[j])
-        }
-        const end = {
-          x: this.xPoints[j + 1],
-          y: this.calculationYHeight(this.yAxisData[i].data[j + 1])
-        }
-        currentCrycle.data.push(start)
-        if (i === this.yAxisData[i].data.length - 2) currentCrycle.data.push(end)
-        this.drawLine({ start, end, color: this.yAxisData[i].color })
+        const x = this.xPoints[j]
+        const y = this.calculationYHeight(this.yAxisData[i].data[j])
+        this.ctx.lineTo(x, y)
+        this.ctx.strokeStyle = this.yAxisData[i].color
+        this.ctx.stroke()
+        currentCrycle.data.push({ x, y })
+      }
+
+      if (this.area) {
+        this.ctx.lineTo(this.left + this.effectWidth, this.bottomLineY)
+        var gradient = this.ctx.createLinearGradient(0, 0, 0, 300);
+        this.area.forEach((value, index) => {
+          gradient.addColorStop(index, value);
+
+        })
+        this.ctx.fillStyle = gradient
+        this.ctx.fill();
+        this.ctx.closePath()
       }
       crycle.push(currentCrycle)
     }
@@ -76,15 +90,8 @@ class Chart extends Base {
   _drawTipsLine(x) {
     this.clear()
     this._chartInit()
-    const start = {
-      x,
-      y: this.height - this.bottom
-    }
-    const end = {
-      x,
-      y: this.bottom
-    }
-    this.drawLine({ start, end, isDotted: true })
+    this.ctx.strokeStyle = '#d0d0d0'
+    this.drawLine(x, this.height - this.bottom, x, this.bottom)
   }
 }
 

@@ -60,3 +60,23 @@ MultipleChart.args = {
     )
   }
 };
+
+export const AreaChart = Template.bind({});
+// More on args: https://storybook.js.org/docs/react/writing-stories/args
+AreaChart.args = {
+  padding: 30,
+  x: ['2011', '2012', '2013', '2014', '2015'],
+  y: [
+    {
+      labal: '',
+      data: [50, 187, 97, 127, 130],
+      color: 'rgba(133,171,212,0.6)',
+    },
+  ],
+  onChange: (e, idx) => {
+    console.log(
+      `x轴的坐标是: ${e.offsetX}, y轴的坐标是: ${e.offsetY}, 当前选中的数据是第${idx}个`
+    )
+  },
+  area: ['rgba(133,171,212,0.6)', 'rgba(133,171,212,0.1)'],
+};

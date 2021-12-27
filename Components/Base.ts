@@ -1,6 +1,6 @@
+import { ca } from 'date-fns/locale'
 import { IX, IY } from './type'
-
-const DPI = window.devicePixelRatio
+import { DPI } from './util'
 
 export default class Base {
   props: any
@@ -49,39 +49,50 @@ export default class Base {
 
   _init() {
     const canvas: HTMLCanvasElement = document.getElementById(this.props.id) as HTMLCanvasElement
-    canvas.width = canvas.width
-    canvas.height = canvas.height
-    this.canvas = canvas
     this.width = canvas.width
     this.height = canvas.height
+    canvas.style.width = canvas.width + 'px'
+    canvas.style.height = canvas.height + 'px'
+    canvas.width = canvas.width * DPI
+    canvas.height = canvas.height * DPI
+    this.canvas = canvas
     this.ctx = canvas.getContext('2d')
+    this.ctx.scale(DPI, DPI)
   }
 
   drawAxis() {
+    this.ctx.strokeStyle = "#566a80";
     this._drawXAxis()
-    this._drawYAxis()
-    this._fillYAxisText()
+    // this._drawYAxis()
+    this._drawYAxisMark()
   }
 
   _drawXAxis() {
-    const start = { x: this.left, y: this.bottomLineY }
-    const end = { x: this.left + this.effectWidth, y: this.bottomLineY }
-    this.drawLine({ start, end })
+    const originX = this.left
+    const originY = this.bottomLineY
+    const endX = this.left + this.effectWidth
+    this.drawLine(originX, originY, endX, originY)
   }
 
   _drawYAxis() {
+    const originX = this.left
+    const originY = this.bottomLineY
+    const endY = this.top
+    this.drawLine(originX, originY, originX, endY)
+  }
+
+  _drawYAxisMark() {
+    this.ctx.strokeStyle = "#E0E0E0";
     const yCoodrAxisData = this._getYCoodrAxisData()
     const length = yCoodrAxisData.length
     const yPiece = this.effectHeight / length
-    const points = []
     for (let i = 0; i < length; i ++) {
-      const y = this.height - (i + 1) * yPiece - this.bottom // 0刻度线不画
-      points.push(y)
-      const start = { x: this.left, y: y }
-      const end = { x: this.width - this.right, y }
-      this.drawLine({ start, end, isDotted: true })
+      const y = this.height - (i + 1) * yPiece - this.bottom
+      const originX = this.left
+      const endX = this.width - this.right
+      this.drawLine(originX, y, endX, y)
+      this._fillText({ text: yCoodrAxisData[i], x: this.left - 20, y: y + 3 })
     }
-    this.yPoints = points
   }
 
   _getYCoodrAxisData() {
@@ -116,29 +127,29 @@ export default class Base {
     this.XAxisSecionWidth = this.effectWidth / this.xAxisData.length
   }
 
-  _drawChartXAxisCoodrLine() {
-    this._drawAxisCoodrLine(this.xAxisData.length)
+  _drawChartXAxisMark() {
+    this._drawXAxisMarkLine(this.xAxisData.length)
+    this._drawChartXAxisMarkText()
   }
 
   _drawBarXAxisCoodrLine() {
-    this._drawAxisCoodrLine(this.xAxisData.length + 1)
+    this._drawXAxisMarkLine(this.xAxisData.length + 1)
   }
 
-  _drawAxisCoodrLine(length) {
+  _drawXAxisMarkLine(length) {
+    this.ctx.strokeStyle = '#566a80'
     const xPoints = []
     for (let i = 0; i < length; i ++) {
       let x = i * this.XAxisSecionWidth + this.left
       if (i === 0) x = x + 1
       else if (i === length - 1) x = x - 1
-      let start = { x, y: this.bottomLineY }
-      let end = { x, y: this.bottomLineY + 5 }
-      this.drawLine({ start, end })
-      xPoints.push(start.x)
+      this.drawLine(x, this.bottomLineY, x, this.bottomLineY + 5)
+      xPoints.push(x)
     }
     this.xPoints = xPoints
   }
 
-  _drawChartXAxisCoodrText() {
+  _drawChartXAxisMarkText() {
     const xAxisData = this.xAxisData
     for (let i = 0; i < this.xPoints.length; i ++) {
       const width = this.ctx.measureText(xAxisData[i]).width
@@ -194,22 +205,12 @@ export default class Base {
     return data * this.yPiece
   }
 
-  drawLine({
-    start,
-    end,
-    isDotted = false,
-    color = '#000'
-  }) {
-    this.ctx.beginPath()
-    if (isDotted) {
-      this.ctx.setLineDash([2, 5])
-    } else {
-      this.ctx.setLineDash([])
-    }
-    this.setStrokeColor(color)
-    this.ctx.moveTo(start.x, start.y)
-    this.ctx.lineTo(end.x, end.y)
-    this.ctx.stroke()
+  drawLine(x, y, X, Y) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(x, y);
+    this.ctx.lineTo(X, Y);
+    this.ctx.stroke();
+    this.ctx.closePath();
   }
 
   drawBar({
